@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VibroCalcGUI
 {
@@ -11,7 +7,11 @@ namespace VibroCalcGUI
         static void Main(string[] args)
         {
             AgVibroCalcGUI.PrintTemplateGUI();
+            //AgVibroCalcGUI.DrawCell(0, 0, 3, 4);
             Console.ReadKey();
+            AgVibroCalcGUI.PrintResult();
+            Console.ReadKey();
+            //Console.ReadLine();
         }
     }
 }

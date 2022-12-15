@@ -19,39 +19,59 @@ namespace VibroCalcGUI
         private static int[,] resultPositionX = new int[4, 4];
         private static int[,] resultPositionY = new int[4, 4];
         //==========
-        private static Array menuItemArray;
+        private static string[,] menuItemArray;
         private static int colomnTotal = 1;
         private static int rowTotal = 1;
+        private static int cellWidth = 10;
+        private static int cellHeight = 3;
         private static int offsetX = 10;
         private static int offsetY = 1;
         private static int currentPositionX = 5;
         private static int carrentPositionY = 1;
+        private const int SpaceBetweenWordsX = 3;
         internal static void Menu(string[] itemsName, bool isVerticalMenu = true)
         {
-            menuItemArray = itemsName;
+            //menuItemArray = itemsName;
             if (isVerticalMenu)
             {
-                rowTotal = menuItemArray.Length;
+                rowTotal = itemsName.Length;
+                menuItemArray = new string[rowTotal, 1];
+                for (int row = 0; row < rowTotal; row++)
+                    menuItemArray[row, 0] = itemsName[row];
             }
             if (!isVerticalMenu)
             {
-                colomnTotal = menuItemArray.Length;
+                colomnTotal = itemsName.Length;
+                menuItemArray = new string[1, colomnTotal];
+                for (int colomn = 0; colomn < colomnTotal; colomn++)
+                    menuItemArray[0, colomn] = itemsName[colomn];
             }
             PrintTemplateGUI();
         }
         internal static void Menu(string[,] itemsName)
         {
-            colomnTotal = itemsName.GetLength(0);
-            rowTotal = itemsName.GetLength(1);
+            colomnTotal = itemsName.GetLength(1);
+            rowTotal = itemsName.GetLength(0);
             menuItemArray = itemsName;
             PrintTemplateGUI();
         }
-
+        private static void SetCellWidth()
+        {
+            int itemWidth = 0;
+            foreach (string item in menuItemArray)
+            {
+                if (itemWidth < item.Length)
+                    itemWidth = item.Length;
+                if (cellWidth < itemWidth + SpaceBetweenWordsX)
+                    cellWidth = itemWidth + SpaceBetweenWordsX;
+            }
+        }
         internal static void PrintTemplateGUI()
         {
-            for (int row = 0; row<rowTotal; row++)
+            SetCellWidth();
+            for (int row = 0; row < rowTotal; row++)
             {
-                for (int colomn =0; colomn < colomnTotal; colomn++)
+                for (int colomn = 0; colomn < colomnTotal; colomn++)
                 {
                     PrintFormatedCell(row, colomn);
                 }
@@ -59,13 +79,48 @@ namespace VibroCalcGUI
         }
         private static void PrintFormatedCell(int row, int colomn)
         {
-            
+            if (menuItemArray[row, colomn] == String.Empty)
+                return;
+            MoveCursorToCellTopLeft(row, colomn);
+            int[] cellTopLeftXY = GetCursorPozitionXY();
+            //ДОБАВИТЬ ЗАПИСЬ КООРДИНАТ В МАССИВ
+            string horizontalLine = "+".PadRight(cellWidth, '-') + "+";
+            string firstLine = "| " + menuItemArray[row, colomn].PadLeft(cellWidth - SpaceBetweenWordsX, ' ') + " |";
+            string secondLine = "|".PadRight(cellWidth, ' ') + "|";
+            Console.Write(horizontalLine);
+            MoveCursorToPositionXY(cellTopLeftXY[1], cellTopLeftXY[0] + 1);
+            Console.Write(firstLine);
+            MoveCursorToPositionXY(cellTopLeftXY[1], cellTopLeftXY[0] + 2);
+            Console.Write(secondLine);
+            MoveCursorToPositionXY(cellTopLeftXY[1], cellTopLeftXY[0] + 3);
+            Console.Write(horizontalLine);
+            //---
         }
-        private static void MoveCursorToCell(int row, int colomn)
+        private static void MoveCursorToCellTopLeft(int row, int colomn)
         {
-
+            int x = startPositionX + colomn * cellWidth;
+            int y = startPositionY + row * cellHeight;
+            MoveCursorToPositionXY(x, y);
+        }
+        private static void MoveCursorToPositionXY(int x, int y)
+        {
+            Console.CursorLeft = x;
+            Console.CursorTop = y;
+        }
+        private static void MoveCursorToPositionXY(int[] xy)
+        {
+            Console.CursorLeft = xy[1];
+            Console.CursorTop = xy[0];
+        }
+        private static int[] GetCursorPozitionXY()
+        {
+            int[] xy = new int[2];
+            xy[0] = Console.CursorTop;
+            xy[1] = Console.CursorLeft;
+            return xy;
         }
 
+        //TO_DELETE
         internal static void _PrintTemplateGUI()
         {
             Console.CursorLeft = startPositionX;
@@ -130,11 +185,7 @@ namespace VibroCalcGUI
             Console.CursorLeft = cursorPositionX;
             Console.CursorTop = cursorPositionY;
         }
-        private static void MoveCursorToPositionXY(int x, int y)
-        {
-            Console.CursorLeft = x;
-            Console.CursorTop = y;
-        }
+
         private static void PrintGorisontalLine(int length)
         {
             for (int i = 0; i < length; i++)

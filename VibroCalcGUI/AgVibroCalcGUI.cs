@@ -19,41 +19,97 @@ namespace VibroCalcGUI
         private static int[,] resultPositionX = new int[4, 4];
         private static int[,] resultPositionY = new int[4, 4];
         //==========
+        // public static List<MenuResult> Result = new List<MenuResult>();
+
         private static string[,] menuItemArray;
         private static int colomnTotal = 1;
         private static int rowTotal = 1;
         private static int cellWidth = 10;
         private static int cellHeight = 3;
-        private static int offsetX = 10;
-        private static int offsetY = 1;
-        private static int currentPositionX = 5;
-        private static int carrentPositionY = 1;
+        //private static int offsetX = 10;
+        //private static int offsetY = 1;
+        //private static int currentPositionX = 5;
+        //private static int carrentPositionY = 1;
         private const int SpaceBetweenWordsX = 3;
-        internal static void Menu(string[] itemsName, bool isVerticalMenu = true)
+        private static double[,] resultValue;
+        private static string[,] resultValueString;
+        internal struct MenuResult
         {
-            //menuItemArray = itemsName;
+            internal int selectedItem;
+            internal double newValue;
+        }
+        internal static MenuResult Menu(string[] itemsName, double[] defaultValues, bool isVerticalMenu = true)
+        {
+            MenuResult menuResult = new MenuResult();
+
+            if (itemsName.Length != defaultValues.Length)
+            {
+                Console.WriteLine("Массив пунктов меню не соответствует массиву результатов");
+                menuResult.selectedItem = -1;
+                return menuResult;
+            }
             if (isVerticalMenu)
             {
                 rowTotal = itemsName.Length;
                 menuItemArray = new string[rowTotal, 1];
+                resultValueString= new string[rowTotal, 1];
                 for (int row = 0; row < rowTotal; row++)
+                {
+                    resultValueString[row, 0] = defaultValues[row].ToString();
                     menuItemArray[row, 0] = itemsName[row];
+                }
             }
             if (!isVerticalMenu)
             {
                 colomnTotal = itemsName.Length;
                 menuItemArray = new string[1, colomnTotal];
+                resultValueString=new string[1, colomnTotal];
                 for (int colomn = 0; colomn < colomnTotal; colomn++)
+                {
+                    resultValueString[0, colomn] = defaultValues[colomn].ToString();
                     menuItemArray[0, colomn] = itemsName[colomn];
+                }
             }
             PrintTemplateGUI();
+
+            return menuResult;
         }
-        internal static void Menu(string[,] itemsName)
+        internal static MenuResult Menu(string[,] itemsName, double[,] defaultValues)
         {
+            MenuResult menuResult = new MenuResult();
+            if (itemsName.GetLength(0) != defaultValues.GetLength(0) || itemsName.GetLength(1) != defaultValues.GetLength(1))
+            {
+                Console.WriteLine("Массив пунктов меню не соответствует массиву результатов");
+                menuResult.selectedItem = -1;
+                return menuResult;
+            }
             colomnTotal = itemsName.GetLength(1);
             rowTotal = itemsName.GetLength(0);
             menuItemArray = itemsName;
+            resultValueString = new string[rowTotal, colomnTotal];
+            for (int row = 0; row < rowTotal; row++)
+            {
+                for (int colomn = 0; colomn<colomnTotal; colomn++)
+                {
+                    resultValueString[row, colomn] = defaultValues[row, colomn].ToString();
+                }
+            }
             PrintTemplateGUI();
+            menuResult.selectedItem = GetSelectedItem();
+            menuResult.newValue = GetNewValue();
+            return menuResult;
+        }
+        private static int GetSelectedItem()
+        {
+            int i = -1;
+            i++;
+            return i;
+        }
+        private static double GetNewValue()
+        {
+            double newValue = 3.14;
+            Console.ReadKey();
+            return newValue;
         }
         private static void SetCellWidth()
         {
@@ -85,16 +141,15 @@ namespace VibroCalcGUI
             int[] cellTopLeftXY = GetCursorPozitionXY();
             //ДОБАВИТЬ ЗАПИСЬ КООРДИНАТ В МАССИВ
             string horizontalLine = "+".PadRight(cellWidth, '-') + "+";
-            string firstLine = "| " + menuItemArray[row, colomn].PadLeft(cellWidth - SpaceBetweenWordsX, ' ') + " |";
-            string secondLine = "|".PadRight(cellWidth, ' ') + "|";
+            string menuItemLine = "| " + menuItemArray[row, colomn].PadLeft(cellWidth - SpaceBetweenWordsX, ' ') + " |";
+            string resultLine = "| " + resultValueString[row, colomn].PadLeft(cellWidth - SpaceBetweenWordsX, ' ') + " |";
             Console.Write(horizontalLine);
             MoveCursorToPositionXY(cellTopLeftXY[1], cellTopLeftXY[0] + 1);
-            Console.Write(firstLine);
+            Console.Write(menuItemLine);
             MoveCursorToPositionXY(cellTopLeftXY[1], cellTopLeftXY[0] + 2);
-            Console.Write(secondLine);
+            Console.Write(resultLine);
             MoveCursorToPositionXY(cellTopLeftXY[1], cellTopLeftXY[0] + 3);
-            Console.Write(horizontalLine);
-            //---
+            Console.WriteLine(horizontalLine);
         }
         private static void MoveCursorToCellTopLeft(int row, int colomn)
         {

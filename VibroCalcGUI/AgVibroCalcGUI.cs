@@ -46,14 +46,15 @@ namespace VibroCalcGUI
             if (itemsName.Length != defaultValues.Length)
             {
                 Console.WriteLine("Массив пунктов меню не соответствует массиву результатов");
-                menuResult.selectedItem = -1;
+                menuResult.selectedItem[0] = -1;
+                menuResult.selectedItem[1] = -1;
                 return menuResult;
             }
             if (isVerticalMenu)
             {
                 rowTotal = itemsName.Length;
                 menuItemArray = new string[rowTotal, 1];
-                resultValueString= new string[rowTotal, 1];
+                resultValueString = new string[rowTotal, 1];
                 for (int row = 0; row < rowTotal; row++)
                 {
                     resultValueString[row, 0] = defaultValues[row].ToString();
@@ -64,7 +65,7 @@ namespace VibroCalcGUI
             {
                 colomnTotal = itemsName.Length;
                 menuItemArray = new string[1, colomnTotal];
-                resultValueString=new string[1, colomnTotal];
+                resultValueString = new string[1, colomnTotal];
                 for (int colomn = 0; colomn < colomnTotal; colomn++)
                 {
                     resultValueString[0, colomn] = defaultValues[colomn].ToString();
@@ -82,7 +83,8 @@ namespace VibroCalcGUI
             if (itemsName.GetLength(0) != defaultValues.GetLength(0) || itemsName.GetLength(1) != defaultValues.GetLength(1))
             {
                 Console.WriteLine("Массив пунктов меню не соответствует массиву результатов");
-                menuResult.selectedItem = -1;
+                menuResult.selectedItem[0] = -1;
+                menuResult.selectedItem[1] = -1;
                 return menuResult;
             }
             colomnTotal = itemsName.GetLength(1);
@@ -91,7 +93,7 @@ namespace VibroCalcGUI
             resultValueString = new string[rowTotal, colomnTotal];
             for (int row = 0; row < rowTotal; row++)
             {
-                for (int colomn = 0; colomn<colomnTotal; colomn++)
+                for (int colomn = 0; colomn < colomnTotal; colomn++)
                 {
                     resultValueString[row, colomn] = defaultValues[row, colomn].ToString();
                 }
@@ -104,32 +106,30 @@ namespace VibroCalcGUI
         private static int[] GetSelectedItem()
         {
             int[] selected = new int[] { 0, 0 };
-            int row = 0;
+            int row = 4;
             int colomn = 0;
-            
-            //ConsoleKeyInfo cki = new ConsoleKeyInfo();
             ConsoleKey key = new ConsoleKey();
+            MoveCursorToResult(row, colomn);
             do
             {
+                key = Console.ReadKey().Key;
                 if (key == ConsoleKey.UpArrow)
                 {
-                    
+                    row = MoveToNextUpCell(row, colomn);
                 }
                 if (key == ConsoleKey.DownArrow)
                 {
-
+                    row = MoveToNextDownCell(row, colomn);
                 }
                 if (key == ConsoleKey.LeftArrow)
                 {
-                    if (colomn == 0)
-                    {
-                        colomn = 1;
-                    }
+                    colomn = MoveToNextLeftCell(row, colomn);
                 }
                 if (key == ConsoleKey.RightArrow)
                 {
-
+                    colomn = MoveToNextRightCell(row, colomn);
                 }
+                MoveCursorToResult(row, colomn);
                 if (key == ConsoleKey.Enter)
                 {
 
@@ -140,59 +140,57 @@ namespace VibroCalcGUI
                 }
             }
             while (key != ConsoleKey.Escape && key != ConsoleKey.Enter);
+            selected[0] = colomn;
+            selected[1] = row;
             return selected;
         }
-        private static int MoveSelectionLeft(int row, int colomn)
+        private static int MoveToNextLeftCell(int row, int colomn)
         {
-            int newRow = colomn - 1;
-            if (newRow == -1)
-                newRow += colomnTotal;
-            while (menuItemArray[newRow, colomn] == String.Empty)
+            int colomnNext = colomn;
+            do
             {
-                newRow--;
-                if (newRow == row)
-                    return -1;
+                colomnNext--;
+                if (colomnNext < 0)
+                    return colomn;
             }
-            return newRow;
+            while (menuItemArray[row, colomnNext] == String.Empty);
+            return colomnNext;
         }
-        private static int MoveSelectionRight(int row, int colomn)
+        private static int MoveToNextRightCell(int row, int colomn)
         {
-            int newRow = colomn - 1;
-            if (newRow == -1)
-                newRow += colomnTotal;
-            while (menuItemArray[newRow, colomn] == String.Empty)
+            int colomnNext = colomn;
+            do
             {
-                newRow--;
-                if (newRow == row)
-                    return -1;
+                colomnNext++;
+                if (colomnNext == colomnTotal)
+                    return colomn;
             }
-            return newRow;
+            while (menuItemArray[row, colomnNext] == String.Empty);
+            return colomnNext;
         }
-        private static int MoveSelectionUp(int row, int colomn)
+        private static int MoveToNextUpCell(int row, int colomn)
         {
-            int newRow = colomn - 1;
-            if (newRow == -1)
-                newRow += colomnTotal;
-            while (menuItemArray[newRow, colomn] == String.Empty)
+            int rowNext = row;
+            do
             {
-                newRow--;
-                if (newRow == row)
-                    return -1;
+                rowNext--;
+                if (rowNext < 0)
+                    return row;
             }
-            return newRow;
+            while (menuItemArray[rowNext, colomn] == String.Empty);
+            return rowNext;
         }
-        private static int MoveSelectionDown(int row, int colomn)
+        private static int MoveToNextDownCell(int row, int colomn)
         {
-            int newRow = colomn - 1;
-            if (newRow == -1)
-                newRow += colomnTotal;
-            while (menuItemArray[newRow, colomn] == String.Empty)
+            int rowNext = row;
+            do
             {
-                newRow--;
-                if (newRow == row)
-                    return -1;
+                rowNext++;
+                if (rowNext == rowTotal)
+                    return row;
             }
-            return newRow;
+            while (menuItemArray[rowNext, colomn] == String.Empty);
+            return rowNext;
         }
         private static double GetNewValue()
         {
@@ -248,8 +246,8 @@ namespace VibroCalcGUI
         }
         private static void MoveCursorToResult(int row, int colomn)
         {
-            int x = startPositionX + colomn * cellWidth + 2;
-            int y = startPositionY + row * cellHeight + 3;
+            int x = startPositionX + colomn * cellWidth +cellWidth/2;
+            int y = startPositionY + row * cellHeight+2;
             MoveCursorToPositionXY(x, y);
         }
         private static void MoveCursorToPositionXY(int x, int y)

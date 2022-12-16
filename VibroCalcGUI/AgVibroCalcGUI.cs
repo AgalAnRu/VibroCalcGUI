@@ -33,9 +33,10 @@ namespace VibroCalcGUI
         private const int SpaceBetweenWordsX = 3;
         private static double[,] resultValue;
         private static string[,] resultValueString;
+        private static int[] resultXY;
         internal struct MenuResult
         {
-            internal int selectedItem;
+            internal int[] selectedItem;
             internal double newValue;
         }
         internal static MenuResult Menu(string[] itemsName, double[] defaultValues, bool isVerticalMenu = true)
@@ -71,7 +72,8 @@ namespace VibroCalcGUI
                 }
             }
             PrintTemplateGUI();
-
+            menuResult.selectedItem = GetSelectedItem();
+            menuResult.newValue = GetNewValue();
             return menuResult;
         }
         internal static MenuResult Menu(string[,] itemsName, double[,] defaultValues)
@@ -99,11 +101,98 @@ namespace VibroCalcGUI
             menuResult.newValue = GetNewValue();
             return menuResult;
         }
-        private static int GetSelectedItem()
+        private static int[] GetSelectedItem()
         {
-            int i = -1;
-            i++;
-            return i;
+            int[] selected = new int[] { 0, 0 };
+            int row = 0;
+            int colomn = 0;
+            
+            //ConsoleKeyInfo cki = new ConsoleKeyInfo();
+            ConsoleKey key = new ConsoleKey();
+            do
+            {
+                if (key == ConsoleKey.UpArrow)
+                {
+                    
+                }
+                if (key == ConsoleKey.DownArrow)
+                {
+
+                }
+                if (key == ConsoleKey.LeftArrow)
+                {
+                    if (colomn == 0)
+                    {
+                        colomn = 1;
+                    }
+                }
+                if (key == ConsoleKey.RightArrow)
+                {
+
+                }
+                if (key == ConsoleKey.Enter)
+                {
+
+                }
+                if (key == ConsoleKey.Escape)
+                {
+
+                }
+            }
+            while (key != ConsoleKey.Escape && key != ConsoleKey.Enter);
+            return selected;
+        }
+        private static int MoveSelectionLeft(int row, int colomn)
+        {
+            int newRow = colomn - 1;
+            if (newRow == -1)
+                newRow += colomnTotal;
+            while (menuItemArray[newRow, colomn] == String.Empty)
+            {
+                newRow--;
+                if (newRow == row)
+                    return -1;
+            }
+            return newRow;
+        }
+        private static int MoveSelectionRight(int row, int colomn)
+        {
+            int newRow = colomn - 1;
+            if (newRow == -1)
+                newRow += colomnTotal;
+            while (menuItemArray[newRow, colomn] == String.Empty)
+            {
+                newRow--;
+                if (newRow == row)
+                    return -1;
+            }
+            return newRow;
+        }
+        private static int MoveSelectionUp(int row, int colomn)
+        {
+            int newRow = colomn - 1;
+            if (newRow == -1)
+                newRow += colomnTotal;
+            while (menuItemArray[newRow, colomn] == String.Empty)
+            {
+                newRow--;
+                if (newRow == row)
+                    return -1;
+            }
+            return newRow;
+        }
+        private static int MoveSelectionDown(int row, int colomn)
+        {
+            int newRow = colomn - 1;
+            if (newRow == -1)
+                newRow += colomnTotal;
+            while (menuItemArray[newRow, colomn] == String.Empty)
+            {
+                newRow--;
+                if (newRow == row)
+                    return -1;
+            }
+            return newRow;
         }
         private static double GetNewValue()
         {
@@ -155,6 +244,12 @@ namespace VibroCalcGUI
         {
             int x = startPositionX + colomn * cellWidth;
             int y = startPositionY + row * cellHeight;
+            MoveCursorToPositionXY(x, y);
+        }
+        private static void MoveCursorToResult(int row, int colomn)
+        {
+            int x = startPositionX + colomn * cellWidth + 2;
+            int y = startPositionY + row * cellHeight + 3;
             MoveCursorToPositionXY(x, y);
         }
         private static void MoveCursorToPositionXY(int x, int y)

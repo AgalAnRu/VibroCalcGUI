@@ -95,7 +95,7 @@ namespace VibroCalcGUI
             resultValueString = itemsValues;
             PrintTemplateGUI();
             menuResult.selectedItem = GetSelectedItem();
-            if (menuResult.selectedItem[0]<0|| menuResult.selectedItem[1] < 0)
+            if (menuResult.selectedItem[0] < 0 || menuResult.selectedItem[1] < 0)
                 return menuResult;
             menuResult.newValue = GetNewValue(menuResult.selectedItem);
             return menuResult;
@@ -145,17 +145,37 @@ namespace VibroCalcGUI
 
         private static string GetNewValue(int[] rowColomn)
         {
-            string newValue;
+            
             int row = rowColomn[1];
             int colomn = rowColomn[0];
             int x = startPositionX + colomn * cellWidth + 2;
             int y = startPositionY + row * cellHeight + 2;
             MoveCursorToPositionXY(x, y);
-            string resultLine = String.Empty.PadLeft(cellWidth - SpaceBetweenWordsX, ' ');
+            int valueStringWidth = cellWidth - SpaceBetweenWordsX;
+            string resultLine = String.Empty.PadLeft(valueStringWidth, ' ');
             Console.Write(resultLine);
-            MoveCursorToPositionXY(x, y);
-            newValue = Console.ReadLine();
-            return newValue;
+            MoveCursorToPositionXY(x + valueStringWidth - 1, y);
+            return GetFixedLengthString(valueStringWidth);
+        }
+        private static string GetFixedLengthString(int length)
+        {
+            string str = String.Empty;
+            int[] xy = GetCursorPozitionXY();
+            ConsoleKeyInfo cki;
+            do
+            {
+                cki = Console.ReadKey(true);
+                if (cki.Key == ConsoleKey.Enter)
+                    return str;
+                if (cki.Key == ConsoleKey.Escape)
+                    return string.Empty;
+                str += cki.KeyChar;
+                MoveCursorToPositionXY(xy[1] - str.Length, xy[0]);
+                Console.Write(str);
+                MoveCursorToPositionXY(xy[1], xy[0]);
+            }
+            while (str.Length != length);
+            return str;
         }
         private static void SetCellWidth()
         {
@@ -297,7 +317,7 @@ namespace VibroCalcGUI
         {
             string[] strValues = new string[values.Length];
             for (int i = 0; i < values.Length; i++)
-                    strValues[i] = values[i].ToString();
+                strValues[i] = values[i].ToString();
             return strValues;
         }
     }

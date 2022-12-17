@@ -17,7 +17,6 @@ namespace VibroCalcGUI
             double[,] paramValues = new double[menuItem.GetLength(0), menuItem.GetLength(1)];
             string[,] paramValuesString;
             paramValues[3, 0] = 9.807;
-
             do
             {
 

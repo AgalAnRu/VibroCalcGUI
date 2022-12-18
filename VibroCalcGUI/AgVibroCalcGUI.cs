@@ -25,11 +25,7 @@ namespace VibroCalcGUI
         private static int colomnTotal = 1;
         private static int rowTotal = 1;
         private static int cellWidth = 10;
-        private static int cellHeight = 3;
-        //private static int offsetX = 10;
-        //private static int offsetY = 1;
-        //private static int currentPositionX = 5;
-        //private static int carrentPositionY = 1;
+        private static readonly int cellHeight = 3;
         private const int SpaceBetweenWordsX = 3;
         private static double[,] resultValue;
         private static string[,] resultValueString;
